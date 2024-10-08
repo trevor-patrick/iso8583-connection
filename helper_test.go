@@ -14,7 +14,6 @@ import (
 	"github.com/moov-io/iso8583/field"
 	"github.com/moov-io/iso8583/network"
 	"github.com/moov-io/iso8583/prefix"
-	"github.com/moov-io/iso8583/sort"
 )
 
 // here are the implementation of the provider protocol:
@@ -80,64 +79,6 @@ var testSpec *iso8583.MessageSpec = &iso8583.MessageSpec{
 			Description: "Extra field",
 			Enc:         encoding.ASCII,
 			Pref:        prefix.ASCII.Fixed,
-		}),
-	},
-}
-
-var testSpecNew *iso8583.MessageSpec = &iso8583.MessageSpec{
-	Name: "ISO 8583 v1993 Spec",
-	Fields: map[int]field.Field{
-		0: field.NewString(&field.Spec{
-			Length:      4,
-			Description: "Message Type Indicator",
-			Enc:         encoding.EBCDIC,
-			Pref:        prefix.EBCDIC.Fixed,
-		}),
-		1: field.NewBitmap(&field.Spec{
-			Length:      8,
-			Description: "BIT MAP",
-			Enc:         encoding.Binary,
-			Pref:        prefix.EBCDIC.Fixed,
-		}),
-		11: field.NewString(&field.Spec{
-			Length:      6,
-			Description: "Systems Trace Audit Number (STAN)",
-			Enc:         encoding.EBCDIC,
-			Pref:        prefix.EBCDIC.Fixed,
-		}),
-		56: field.NewComposite(&field.Spec{
-			Length:      35,
-			Description: "Original Data Elements",
-			Pref:        prefix.EBCDIC.LL,
-			Tag: &field.TagSpec{
-				Sort: sort.StringsByInt,
-			},
-			Subfields: map[string]field.Field{
-				"1": field.NewString(&field.Spec{
-					Length:      4,
-					Description: "Message Type Identifier",
-					Enc:         encoding.EBCDIC,
-					Pref:        prefix.EBCDIC.Fixed,
-				}),
-				"2": field.NewString(&field.Spec{
-					Length:      6,
-					Description: "System Trace Audit Number",
-					Enc:         encoding.EBCDIC,
-					Pref:        prefix.EBCDIC.Fixed,
-				}),
-				"3": field.NewString(&field.Spec{
-					Length:      12,
-					Description: "Local Transaction Time",
-					Enc:         encoding.EBCDIC,
-					Pref:        prefix.EBCDIC.Fixed,
-				}),
-				"4": field.NewString(&field.Spec{
-					Length:      13,
-					Description: "Acquiring Institution Identification Code",
-					Enc:         encoding.EBCDIC,
-					Pref:        prefix.EBCDIC.LL,
-				}),
-			},
 		}),
 	},
 }

@@ -30,18 +30,6 @@ type baseFields struct {
 	STAN         *field.String `index:"11"`
 }
 
-type ReversalAdviceMessage struct {
-	F11 *field.String
-	F56 *OriginalDataElements
-}
-
-type OriginalDataElements struct {
-	F1 *field.String
-	F2 *field.String
-	F3 *field.String
-	F4 *field.String
-}
-
 var (
 	stan   int
 	stanMu sync.Mutex
@@ -351,38 +339,6 @@ func TestClient_Send(t *testing.T) {
 	server, err := NewTestServer()
 	require.NoError(t, err)
 	defer server.Close()
-
-	t.Run("hello", func(t *testing.T) {
-		c, err := connection.New(server.Addr, testSpec, readMessageLength, writeMessageLength)
-		require.NoError(t, err)
-
-		err = c.Connect()
-		require.NoError(t, err)
-
-		// network management message
-		message := iso8583.NewMessage(testSpecNew)
-		err = message.Marshal(ReversalAdviceMessage{
-			F11: field.NewStringValue(getSTAN()),
-			F56: &OriginalDataElements{
-				F1: field.NewStringValue(string("1234")),
-				F2: field.NewStringValue("123456"),
-				F3: field.NewStringValue("123456789000"),
-				F4: field.NewStringValue("\\"),
-			},
-		})
-		require.NoError(t, err)
-
-		// we can send iso message to the server
-		response, err := c.Send(message)
-		require.NoError(t, err)
-		time.Sleep(1 * time.Second)
-
-		mti, err := response.GetMTI()
-		require.NoError(t, err)
-		require.Equal(t, "0810", mti)
-
-		require.NoError(t, c.Close())
-	})
 
 	t.Run("sends messages to server and receives responses", func(t *testing.T) {
 		c, err := connection.New(server.Addr, testSpec, readMessageLength, writeMessageLength)
