@@ -31,15 +31,8 @@ type baseFields struct {
 }
 
 type ReversalAdviceMessage struct {
-	F11 *field.String
-	F56 *OriginalDataElements
-}
-
-type OriginalDataElements struct {
-	F1 *field.String
-	F2 *field.String
-	F3 *field.String
-	F4 *field.String
+	MTI  *field.String `index:"0"`
+	STAN *field.String `index:"11"`
 }
 
 var (
@@ -360,15 +353,10 @@ func TestClient_Send(t *testing.T) {
 		require.NoError(t, err)
 
 		// network management message
-		message := iso8583.NewMessage(testSpecNew)
+		message := iso8583.NewMessage(ISO8583_v1993MessageSpec)
 		err = message.Marshal(ReversalAdviceMessage{
-			F11: field.NewStringValue(getSTAN()),
-			F56: &OriginalDataElements{
-				F1: field.NewStringValue(string("1234")),
-				F2: field.NewStringValue("123456"),
-				F3: field.NewStringValue("123456789000"),
-				F4: field.NewStringValue("\\"),
-			},
+			MTI:  field.NewStringValue("0800"),
+			STAN: field.NewStringValue(getSTAN()),
 		})
 		require.NoError(t, err)
 
