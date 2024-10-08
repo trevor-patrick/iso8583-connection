@@ -60,6 +60,7 @@ inboundMessageHandler := func(c *connection.Connection, message *iso8583.Message
 	}
 }
 
+
 c, err := connection.New("127.0.0.1:9999", brandSpec, readMessageLength, writeMessageLength,
 	connection.SendTimeout(100*time.Millisecond),
 	connection.IdleTime(50*time.Millisecond),
