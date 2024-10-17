@@ -83,6 +83,36 @@ var testSpec *iso8583.MessageSpec = &iso8583.MessageSpec{
 	},
 }
 
+var ISO8583_v1993MessageSpec *iso8583.MessageSpec = &iso8583.MessageSpec{
+	Name: "ISO 8583 v1993 Spec",
+	Fields: map[int]field.Field{
+		0: field.NewString(&field.Spec{
+			Length:      4,
+			Description: "Message Type Indicator",
+			Enc:         encoding.EBCDIC,
+			Pref:        prefix.EBCDIC.Fixed,
+		}),
+		1: field.NewBitmap(&field.Spec{
+			Length:      8,
+			Description: "BIT MAP",
+			Enc:         encoding.Binary,
+			Pref:        prefix.EBCDIC.Fixed,
+		}),
+		7: field.NewString(&field.Spec{
+			Length:      10,
+			Description: "Transmission Date & Time",
+			Enc:         encoding.EBCDIC,
+			Pref:        prefix.EBCDIC.Fixed,
+		}),
+		11: field.NewString(&field.Spec{
+			Length:      6,
+			Description: "Systems Trace Audit Number (STAN)",
+			Enc:         encoding.EBCDIC,
+			Pref:        prefix.EBCDIC.Fixed,
+		}),
+	},
+}
+
 // create testServer for testing
 type testServer struct {
 	Addr string

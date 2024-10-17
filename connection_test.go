@@ -30,6 +30,11 @@ type baseFields struct {
 	STAN         *field.String `index:"11"`
 }
 
+type ReversalAdviceMessage struct {
+	MTI  *field.String `index:"0"`
+	STAN *field.String `index:"11"`
+}
+
 var (
 	stan   int
 	stanMu sync.Mutex
@@ -339,6 +344,33 @@ func TestClient_Send(t *testing.T) {
 	server, err := NewTestServer()
 	require.NoError(t, err)
 	defer server.Close()
+
+	t.Run("hello", func(t *testing.T) {
+		c, err := connection.New(server.Addr, testSpec, readMessageLength, writeMessageLength)
+		require.NoError(t, err)
+
+		err = c.Connect()
+		require.NoError(t, err)
+
+		// network management message
+		message := iso8583.NewMessage(ISO8583_v1993MessageSpec)
+		err = message.Marshal(ReversalAdviceMessage{
+			MTI:  field.NewStringValue("0800"),
+			STAN: field.NewStringValue(getSTAN()),
+		})
+		require.NoError(t, err)
+
+		// we can send iso message to the server
+		response, err := c.Send(message)
+		require.NoError(t, err)
+		time.Sleep(1 * time.Second)
+
+		mti, err := response.GetMTI()
+		require.NoError(t, err)
+		require.Equal(t, "0810", mti)
+
+		require.NoError(t, c.Close())
+	})
 
 	t.Run("sends messages to server and receives responses", func(t *testing.T) {
 		c, err := connection.New(server.Addr, testSpec, readMessageLength, writeMessageLength)
